@@ -71,6 +71,7 @@ pair<int, int> match(const int* lotto)
         for(int j = 0; j < 5; ++j)
         {
             int now = lotto[j];
+            /*
             for(int k = 0; k < 5; ++k)
             {
                 if(now == myBingo[i][k])
@@ -81,7 +82,13 @@ pair<int, int> match(const int* lotto)
                 {
                     matchedR += 1;
                 }
-            }
+            }*/
+            int km, kr;
+            km = kr = 0;
+            while(km < 5 && now > myBingo[i][km])  km++;
+            while(kr < 5 && now > randBingo[i][kr])   kr++;
+            if(km < 5 && now == myBingo[i][km])   matchedM += 1;
+            if(kr < 5 && now == randBingo[i][kr]) matchedR += 1;
         }
         resultBuzzM += buzz[matchedM];
         resultBuzzR += buzz[matchedR];
