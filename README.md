@@ -1,4 +1,4 @@
-# BUZZ5
+# BUZZ5 - Statistics for getting more buzz.
 - the unit of valeus is 1000 buzz.
 - each values are measured by the number of matched numbers, 0-1000, 1-5000, 2-30000, 3-100000, 4-150000, 5-300000.
 ## manual
