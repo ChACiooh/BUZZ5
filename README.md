@@ -10,5 +10,7 @@
 - L : actual numbers needed to select.
 - avg : average buzz regarded to get.
 - sigma : standard deviation.
+## example
+![Alt text](/example.png "example")
 ## reference
 [Event page](https://p.eagate.573.jp/game/2dx/24/p/room/buzz_five/index.html)
