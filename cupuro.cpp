@@ -65,7 +65,7 @@ void generateBingos()
 bool bs(int i, int f, const int* _list_, const int& val)
 {
     int mid = (i + f) / 2;
-    if(mid == f || mid == i)    return false;
+    if(mid == f)    return false;
     if(_list_[mid] < val)   return bs(mid+1, f, _list_, val);
     else if(_list_[mid] > val)  return bs(i, mid, _list_, val);
     return true;
