@@ -7,30 +7,35 @@
 #include <cmath>
 
 #define TEST_CASE   100000
+#define HAV_LOTTERYS  7
+#define NUM_OF_EACH_LOTTERY   5
+#define KIND_WINS   6
+#define NUM_BNDRY   24
 #define SQ(a)   ((a) * (a))
 
 using namespace std;
 
-int myBingo[7][5];
-int randBingo[7][5];
-int buzz[6] = {1, 5, 30, 100, 150, 300};
+int myBingo[HAV_LOTTERYS][NUM_OF_EACH_LOTTERY];
+int randBingo[HAV_LOTTERYS][NUM_OF_EACH_LOTTERY];
+int buzz[KIND_WINS] = {1, 5, 30, 100, 150, 300};
 int valuesM[TEST_CASE];
 int valuesR[TEST_CASE];
-int lottos[TEST_CASE][5];
+int lottos[TEST_CASE][NUM_OF_EACH_LOTTERY];
 
 void generateBingos()
 {
     int k = 1;
-    for(int i = 0; i < 5; ++i)
+    int passive = NUM_BNDRY / NUM_OF_EACH_LOTTERY + (NUM_BNDRY % NUM_OF_EACH_LOTTERY > 0 ? 1 : 0);
+    for(int i = 0; i < passive; ++i)
     {
-        int visit[25] = {0};
-        for(int j = 0; j < 5; ++j)
+        int visit[NUM_BNDRY + 1] = {0};
+        for(int j = 0; j < NUM_OF_EACH_LOTTERY; ++j)
         {
             myBingo[i][j] = k++;
         }
-        for(int j = 0; j < 5;)
+        for(int j = 0; j < NUM_OF_EACH_LOTTERY;)
         {
-            int tmp = rand() % 24 + 1;
+            int tmp = rand() % NUM_BNDRY + 1;
             if(visit[tmp] == 0)
             {
                 visit[tmp] = 1;
@@ -38,27 +43,33 @@ void generateBingos()
             }
         }
     }
-    myBingo[4][4] = rand() % 20 + 1;
-    for(int i = 5; i < 7; ++i)
+
+    int latestIndex = NUM_BNDRY / NUM_OF_EACH_LOTTERY;
+    int counted = NUM_BNDRY - (NUM_BNDRY % NUM_OF_EACH_LOTTERY);
+    for(int i = 1; i <= NUM_BNDRY % NUM_OF_EACH_LOTTERY; ++i)
     {
-        int visit[25] = {0}, visit2[25] = {0};
-        for(int j = 0; j < 5;)
+        myBingo[latestIndex][NUM_OF_EACH_LOTTERY] = rand() % counted + 1;
+    }
+    for(int i = latestIndex + 1; i < HAV_LOTTERYS; ++i)
+    {
+        int visit[NUM_BNDRY + 1] = {0}, visit2[NUM_BNDRY + 1] = {0};
+        for(int j = 0; j < NUM_OF_EACH_LOTTERY;)
         {
-            int tmp = rand() % 24 + 1;
-            while(visit[tmp] == 1)  tmp = rand() % 24 + 1;
+            int tmp = rand() % NUM_BNDRY + 1;
+            while(visit[tmp] == 1)  tmp = rand() % NUM_BNDRY + 1;
             myBingo[i][j] = tmp;
             visit[tmp] = 1;
-            tmp = rand() % 24 + 1;
-            while(visit2[tmp] == 1) tmp = rand() % 24 + 1;
+            tmp = rand() % NUM_BNDRY + 1;
+            while(visit2[tmp] == 1) tmp = rand() % NUM_BNDRY + 1;
             randBingo[i][j++] = tmp;
             visit2[tmp] = 1;
         }
     }
 
-    for(int i = 0; i < 7; ++i)
+    for(int i = 0; i < HAV_LOTTERYS; ++i)
     {
-        sort(myBingo[i], myBingo[i] + 5);
-        sort(randBingo[i], randBingo[i] + 5);
+        sort(myBingo[i], myBingo[i] + NUM_OF_EACH_LOTTERY);
+        sort(randBingo[i], randBingo[i] + NUM_OF_EACH_LOTTERY);
     }
 }
 
@@ -74,33 +85,14 @@ bool bs(int i, int f, const int* _list_, const int& val)
 pair<int, int> match(const int* lotto)
 {
     int resultBuzzM = 0, resultBuzzR = 0;
-    for(int i = 0; i < 7; ++i)
+    for(int i = 0; i < HAV_LOTTERYS; ++i)
     {
         int matchedM = 0, matchedR = 0;
-        for(int j = 0; j < 5; ++j)
+        for(int j = 0; j < NUM_OF_EACH_LOTTERY; ++j)
         {
             int now = lotto[j];
-            /*
-            for(int k = 0; k < 5; ++k)
-            {
-                if(now == myBingo[i][k])
-                {
-                    matchedM += 1;
-                }
-                if(now == randBingo[i][k])
-                {
-                    matchedR += 1;
-                }
-            }*/
-            /*
-            int km, kr;
-            km = kr = 0;
-            while(km < 5 && now > myBingo[i][km])  km++;
-            while(kr < 5 && now > randBingo[i][kr])   kr++;
-            if(km < 5 && now == myBingo[i][km])   matchedM += 1;
-            if(kr < 5 && now == randBingo[i][kr]) matchedR += 1;*/
-            if(bs(0, 5, myBingo[i], now))  matchedM += 1;
-            if(bs(0, 5, randBingo[i], now))    matchedR += 1;
+            if(bs(0, NUM_OF_EACH_LOTTERY, myBingo[i], now))  matchedM += 1;
+            if(bs(0, NUM_OF_EACH_LOTTERY, randBingo[i], now))    matchedR += 1;
         }
         resultBuzzM += buzz[matchedM];
         resultBuzzR += buzz[matchedR];
@@ -120,11 +112,11 @@ int main()
 
     for(int t = 1; t <= TEST_CASE; ++t)
     {
-        int lotto[5];
-        int visit[25] = {0};
-        for(int i = 0; i < 5;)
+        int lotto[NUM_OF_EACH_LOTTERY];
+        int visit[NUM_BNDRY + 1] = {0};
+        for(int i = 0; i < NUM_OF_EACH_LOTTERY;)
         {
-            int tmp = rand() % 24 + 1;
+            int tmp = rand() % NUM_BNDRY + 1;
             if(visit[tmp] == 0)
             {
                 visit[tmp] = 1;
@@ -132,8 +124,8 @@ int main()
             }
         }
 
-        sort(lotto, lotto + 5);
-        for(int i = 0; i < 5; ++i)
+        sort(lotto, lotto + NUM_OF_EACH_LOTTERY);
+        for(int i = 0; i < NUM_OF_EACH_LOTTERY; ++i)
             lottos[t-1][i] = lotto[i];
         pair<int, int> result = match(lotto);
 
@@ -165,7 +157,7 @@ int main()
     sigmaR = sqrt(valanceR);
 
     fprintf(ofp, "avg: (M)%.3lf (R)%.3lf\n", avgM, avgR);
-    fprintf(ofp, "¥ò: (M)%.3lf (R)%.3lf\n", sigmaM, sigmaR);
+    fprintf(ofp, "¥ò : (M)%.3lf (R)%.3lf\n", sigmaM, sigmaR);
     fprintf(ofp, "M/m: (M)%3d/%3d (R)%3d/%3d\n", maxM, minM, maxR, minR);
     for(int t = 1; t <= TEST_CASE; ++t)
     {
