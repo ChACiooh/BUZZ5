@@ -13,7 +13,7 @@ using namespace std;
 
 int myBingo[7][5];
 int randBingo[7][5];
-int buzz[6] = {1, 30, 100, 150, 300};
+int buzz[6] = {1, 5, 30, 100, 150, 300};
 int valuesM[TEST_CASE];
 int valuesR[TEST_CASE];
 int lottos[TEST_CASE][5];
@@ -62,6 +62,15 @@ void generateBingos()
     }
 }
 
+bool bs(int i, int f, const int* _list_, const int& val)
+{
+    int mid = (i + f) / 2;
+    if(mid == f || mid == i)    return false;
+    if(_list_[mid] < val)   return bs(mid+1, f, _list_, val);
+    else if(_list_[mid] > val)  return bs(i, mid, _list_, val);
+    return true;
+}
+
 pair<int, int> match(const int* lotto)
 {
     int resultBuzzM = 0, resultBuzzR = 0;
@@ -83,12 +92,15 @@ pair<int, int> match(const int* lotto)
                     matchedR += 1;
                 }
             }*/
+            /*
             int km, kr;
             km = kr = 0;
             while(km < 5 && now > myBingo[i][km])  km++;
             while(kr < 5 && now > randBingo[i][kr])   kr++;
             if(km < 5 && now == myBingo[i][km])   matchedM += 1;
-            if(kr < 5 && now == randBingo[i][kr]) matchedR += 1;
+            if(kr < 5 && now == randBingo[i][kr]) matchedR += 1;*/
+            if(bs(0, 5, myBingo[i], now))  matchedM += 1;
+            if(bs(0, 5, randBingo[i], now))    matchedR += 1;
         }
         resultBuzzM += buzz[matchedM];
         resultBuzzR += buzz[matchedR];
